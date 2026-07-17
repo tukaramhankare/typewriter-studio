@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Typewriter Studio — Offline Text Typing Animator</title>
+<meta name="description" content="Turn any text into a typewriter animation. 100% offline, runs entirely in your browser, nothing is ever uploaded.">
+<meta name="theme-color" content="#161310">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ============ HEADER ============ -->
+  <header class="app-header">
+    <div class="app-header__title">
+      <h1>Typewriter&nbsp;Studio</h1>
+      <p class="app-header__tagline">Turn any text into a typing animation — style it, time it, export it.</p>
+    </div>
+    <span class="offline-badge" title="Nothing you type ever leaves this device">
+      <span class="offline-badge__dot" aria-hidden="true"></span>
+      100% offline · no server · no tracking
+    </span>
+  </header>
+
+  <!-- ============ MAIN GRID ============ -->
+  <main class="app-grid">
+
+    <!-- ---------- CONTROLS COLUMN ---------- -->
+    <div class="controls-col" id="controlsCol">
+
+      <!-- TEXT -->
+      <section class="panel" aria-labelledby="panel-text-title">
+        <h2 class="panel__eyebrow" id="panel-text-title">Text</h2>
+
+        <label class="field">
+          <span class="field__label">Mode</span>
+          <select id="phraseModeSelect" class="control">
+            <option value="single">Single block of text</option>
+            <option value="rotating" selected>Rotating phrases (one line each)</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="field__label">Your text</span>
+          <textarea id="textInput" class="control control--textarea" rows="5"
+            placeholder="Type or paste your text here.&#10;In rotating mode, put each phrase on its own line."></textarea>
+        </label>
+        <p class="field__hint" id="textHint">Showing a sample. Start typing to use your own text.</p>
+      </section>
+
+      <!-- STYLE -->
+      <section class="panel" aria-labelledby="panel-style-title">
+        <h2 class="panel__eyebrow" id="panel-style-title">Style</h2>
+
+        <div class="theme-presets" role="group" aria-label="Theme presets">
+          <button type="button" class="chip" data-theme="dark">Dark</button>
+          <button type="button" class="chip" data-theme="light">Light</button>
+          <button type="button" class="chip" data-theme="terminal">Terminal</button>
+          <button type="button" class="chip" data-theme="neon">Neon</button>
+        </div>
+
+        <label class="field">
+          <span class="field__label">Font</span>
+          <select id="fontFamilySelect" class="control">
+            <option value="ui-monospace, 'Cascadia Code', 'Courier New', monospace">Monospace</option>
+            <option value="Georgia, 'Times New Roman', serif">Serif</option>
+            <option value="-apple-system, 'Segoe UI', Roboto, Arial, sans-serif">Sans-serif</option>
+            <option value="'Trebuchet MS', Verdana, sans-serif">Rounded sans</option>
+            <option value="'Courier New', Courier, monospace">Typewriter (Courier)</option>
+          </select>
+        </label>
+
+        <div class="field-row">
+          <label class="field">
+            <span class="field__label">Size <output id="fontSizeValue">32</output>px</span>
+            <input type="range" id="fontSizeRange" class="control control--range" min="14" max="72" step="1" value="32">
+          </label>
+          <label class="field">
+            <span class="field__label">Align</span>
+            <select id="alignSelect" class="control">
+              <option value="left">Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="field-row">
+          <label class="field field--color">
+            <span class="field__label">Text</span>
+            <input type="color" id="textColorInput" class="control control--color" value="#ede7de">
+          </label>
+          <label class="field field--color">
+            <span class="field__label">Background</span>
+            <input type="color" id="bgColorInput" class="control control--color" value="#1c1814">
+          </label>
+          <label class="field field--color">
+            <span class="field__label">Cursor</span>
+            <input type="color" id="cursorColorInput" class="control control--color" value="#d97757">
+          </label>
+        </div>
+      </section>
+
+      <!-- TIMING -->
+      <section class="panel" aria-labelledby="panel-timing-title">
+        <h2 class="panel__eyebrow" id="panel-timing-title">Timing</h2>
+
+        <label class="field">
+          <span class="field__label">Typing speed <output id="typingSpeedValue">60</output> ms/char</span>
+          <input type="range" id="typingSpeedRange" class="control control--range" min="10" max="300" step="5" value="60">
+        </label>
+
+        <label class="field">
+          <span class="field__label">Deleting speed <output id="deletingSpeedValue">30</output> ms/char</span>
+          <input type="range" id="deletingSpeedRange" class="control control--range" min="5" max="200" step="5" value="30">
+        </label>
+
+        <label class="field">
+          <span class="field__label">Pause after typed <output id="pauseTypedValue">1200</output> ms</span>
+          <input type="range" id="pauseTypedRange" class="control control--range" min="0" max="4000" step="100" value="1200">
+        </label>
+
+        <label class="field">
+          <span class="field__label">Pause after deleted <output id="pauseDeletedValue">300</output> ms</span>
+          <input type="range" id="pauseDeletedRange" class="control control--range" min="0" max="2000" step="100" value="300">
+        </label>
+
+        <label class="check">
+          <input type="checkbox" id="jitterCheckbox">
+          <span>Natural jitter (randomize speed slightly)</span>
+        </label>
+
+        <label class="check">
+          <input type="checkbox" id="punctuationPauseCheckbox" checked>
+          <span>Pause longer on punctuation ( , . ! ? )</span>
+        </label>
+
+        <label class="check">
+          <input type="checkbox" id="loopCheckbox" checked>
+          <span>Loop forever</span>
+        </label>
+      </section>
+
+      <!-- CURSOR -->
+      <section class="panel" aria-labelledby="panel-cursor-title">
+        <h2 class="panel__eyebrow" id="panel-cursor-title">Cursor</h2>
+
+        <div class="field-row">
+          <label class="field">
+            <span class="field__label">Character</span>
+            <select id="cursorCharSelect" class="control">
+              <option value="|">| bar</option>
+              <option value="_">_ underscore</option>
+              <option value="▌">▌ block</option>
+              <option value="custom">Custom…</option>
+            </select>
+          </label>
+          <label class="field" id="cursorCustomField" hidden>
+            <span class="field__label">Custom</span>
+            <input type="text" id="cursorCustomInput" class="control" maxlength="4" placeholder="e.g. ●">
+          </label>
+        </div>
+
+        <label class="check">
+          <input type="checkbox" id="cursorBlinkCheckbox" checked>
+          <span>Blink</span>
+        </label>
+
+        <label class="field">
+          <span class="field__label">Blink speed <output id="blinkSpeedValue">700</output> ms</span>
+          <input type="range" id="blinkSpeedRange" class="control control--range" min="300" max="1500" step="50" value="700">
+        </label>
+      </section>
+
+      <!-- ACCESSIBILITY -->
+      <section class="panel" aria-labelledby="panel-a11y-title">
+        <h2 class="panel__eyebrow" id="panel-a11y-title">Accessibility</h2>
+        <label class="check">
+          <input type="checkbox" id="instantModeCheckbox">
+          <span>Instant mode — show full text immediately, no animation</span>
+        </label>
+        <p class="field__hint" id="reducedMotionNote" hidden>Your system prefers reduced motion, so instant mode was turned on by default. You can turn it off any time.</p>
+      </section>
+
+      <button type="button" class="btn btn--ghost btn--full" id="resetDefaultsBtn">Reset everything to defaults</button>
+
+    </div>
+
+    <!-- ---------- STAGE COLUMN ---------- -->
+    <div class="stage-col">
+
+      <!-- PREVIEW -->
+      <section class="panel panel--stage" aria-labelledby="panel-preview-title">
+        <div class="panel__stage-head">
+          <h2 class="panel__eyebrow" id="panel-preview-title">Preview</h2>
+          <span class="status-text" id="statusText">Ready</span>
+        </div>
+
+        <div class="preview-stage" id="previewStage">
+          <span class="preview-text" id="previewText" aria-hidden="true"></span><span class="preview-cursor" id="previewCursor" aria-hidden="true">|</span>
+        </div>
+
+        <!-- Full text kept available to assistive tech, independent of the animation -->
+        <div class="sr-only" aria-live="polite" id="srFullText"></div>
+
+        <div class="playback-controls">
+          <button type="button" class="btn btn--accent" id="playBtn">▶ Play</button>
+          <button type="button" class="btn" id="pauseBtn" disabled>⏸ Pause</button>
+          <button type="button" class="btn" id="restartBtn">⟲ Restart</button>
+        </div>
+      </section>
+
+      <!-- EXPORT -->
+      <section class="panel" aria-labelledby="panel-export-title">
+        <h2 class="panel__eyebrow" id="panel-export-title">Export</h2>
+        <p class="field__hint">Generate a self-contained snippet you can paste into any other page. It carries your text and settings — no link back to this tool needed.</p>
+
+        <div class="export-actions">
+          <button type="button" class="btn btn--accent" id="generateExportBtn">Generate embed code</button>
+          <button type="button" class="btn" id="downloadExportBtn">Download as .html</button>
+        </div>
+
+        <textarea id="exportOutput" class="control control--textarea control--code" rows="6" readonly placeholder="Click &quot;Generate embed code&quot; to build a copy-paste snippet."></textarea>
+
+        <div class="export-actions">
+          <button type="button" class="btn" id="copyExportBtn">Copy code</button>
+          <span class="status-text" id="copyStatus" aria-live="polite"></span>
+        </div>
+      </section>
+
+      <p class="save-note" id="saveIndicator">Your text and settings are saved automatically in this browser only.</p>
+    </div>
+
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="app-footer">
+    <p>Typewriter Studio — licensed under Apache License 2.0.</p>
+    <p>Built by Tukaram Hankare — Farmer, Coder &amp; Web Developer, Solapur, Maharashtra, India.</p>
+  </footer>
+
+</div>
+
+<noscript>
+  <div class="noscript-banner">Typewriter Studio needs JavaScript enabled to run. Everything still stays on your device once it's on — no data is sent anywhere.</div>
+</noscript>
+
+<script src="app.js" defer></script>
+</body>
+</html>
